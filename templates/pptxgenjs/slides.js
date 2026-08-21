@@ -2072,16 +2072,29 @@ function renderTitleTelemetryBoard(pptx, slide, slideData, preset) {
 function renderTitleFpCover(pptx, slide, slideData, preset) {
   const accent = cleanHex(preset.accent_primary, '427FE0');
   const secondary = cleanHex(preset.accent_secondary, 'FF5254');
-  const hasHero = Boolean(slideData.background_image);
+  const heroPath = slideData.__heroPath || slideData.background_image;
+  const hasHero = Boolean(heroPath);
   if (hasHero) {
-    addBackgroundImage(slide, slideData.background_image, preset);
+    addBackgroundImage(slide, heroPath, preset);
     slide.addShape('rect', shapeOpts({
       x: 0, y: 0, w: SLIDE_W, h: SLIDE_H,
-      fill: { color: '0B1220', transparency: 32 },
+      fill: { color: '0B1220', transparency: 28 },
       line: { color: '0B1220', transparency: 100, width: 0 },
     }));
   } else {
     paintBackground(slide, preset.bg || 'FFFFFF');
+  }
+  const logoPath = slideData.__logoPath;
+  if (logoPath && fs.existsSync(logoPath)) {
+    const logoH = 0.5;
+    const logoW = logoH * (465 / 83);
+    slide.addImage({
+      path: logoPath,
+      x: MARGIN_X,
+      y: 0.42,
+      w: logoW,
+      h: logoH,
+    });
   }
   const title = safeText(slideData.title, 'TITLE').toUpperCase();
   const subtitle = safeText(slideData.subtitle);

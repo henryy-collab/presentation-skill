@@ -1425,6 +1425,9 @@ function normalizeSlide(spec, outlineDir) {
   if (assets.hero_image || assets.image) {
     out.__heroPath = resolveAssetPath(assets.hero_image || assets.image, outlineDir);
   }
+  if (assets.logo) {
+    out.__logoPath = resolveAssetPath(assets.logo, outlineDir);
+  }
   if (assets.generated_image) {
     out.__generatedImagePath = resolveAssetPath(assets.generated_image, outlineDir);
   }

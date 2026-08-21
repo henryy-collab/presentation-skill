@@ -1124,14 +1124,16 @@ def _design_brief_stub(title: str, style_preset: str, *, user_prompt: str = "") 
         else {}
     )
     renderer_role_systems = (
-        atom_context.get("renderer_role_systems_v1")
-        if isinstance(atom_context.get("renderer_role_systems_v1"), dict)
-        else treatment_profile.get("renderer_role_systems_v1") or {}
+        treatment_profile.get("renderer_role_systems_v1")
+        if isinstance(treatment_profile.get("renderer_role_systems_v1"), dict)
+        and treatment_profile.get("renderer_role_systems_v1")
+        else atom_context.get("renderer_role_systems_v1") or {}
     )
     renderer_role_contracts = (
-        atom_context.get("renderer_role_contracts_v2")
-        if isinstance(atom_context.get("renderer_role_contracts_v2"), dict)
-        else treatment_profile.get("renderer_role_contracts_v2") or {}
+        treatment_profile.get("renderer_role_contracts_v2")
+        if isinstance(treatment_profile.get("renderer_role_contracts_v2"), dict)
+        and treatment_profile.get("renderer_role_contracts_v2")
+        else atom_context.get("renderer_role_contracts_v2") or {}
     )
     return {
         "topic": title,
