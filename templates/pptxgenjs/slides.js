@@ -1079,6 +1079,7 @@ function addDarkTitleBar(slide, preset, title, subtitle, slideData = {}) {
       fontSize: titleFont,
       bold: true,
       color: titleColor,
+      valign: fpHeadings ? 'bottom' : 'top',
     }));
     if (metrics.subtitleText) {
       slide.addText(metrics.subtitleText, textOpts({
@@ -1193,6 +1194,7 @@ function hasFooterChrome(slideData, preset) {
 function addFooter(slide, preset, slideData) {
   const { footer, provenanceParts, footerMode, pageNumber, showPageNumber } = footerChromeModel(slideData, preset);
   if (!footer && provenanceParts.length === 0 && !showPageNumber) return;
+  const footerValign = preset.uppercase_headings ? 'top' : 'middle';
 
   const y = SLIDE_H - FOOTER_H;
   // Thin accent line above footer.
@@ -1218,7 +1220,7 @@ function addFooter(slide, preset, slideData) {
         fontFace: preset.font_body,
         fontSize,
         color: preset.text_muted,
-        valign: 'middle',
+        valign: footerValign,
         fit: 'shrink',
       }));
     }
@@ -1232,7 +1234,7 @@ function addFooter(slide, preset, slideData) {
         fontSize: 8.4,
         color: preset.text_muted,
         align: 'right',
-        valign: 'middle',
+        valign: footerValign,
       }));
     }
     return;
@@ -1253,7 +1255,7 @@ function addFooter(slide, preset, slideData) {
       fontFace: preset.font_body,
       fontSize: footerFont,
       color: preset.text_muted,
-      valign: 'middle',
+      valign: footerValign,
       fit: 'shrink',
     }));
   }
@@ -1275,7 +1277,7 @@ function addFooter(slide, preset, slideData) {
       color: preset.text_muted,
       italic: true,
       align: sourceOnly ? 'left' : 'right',
-      valign: 'middle',
+      valign: footerValign,
       fit: 'shrink',
     }));
   }
@@ -1289,7 +1291,7 @@ function addFooter(slide, preset, slideData) {
       fontSize: 9,
       color: preset.text_muted,
       align: 'right',
-      valign: 'middle',
+      valign: footerValign,
     }));
   }
 }
