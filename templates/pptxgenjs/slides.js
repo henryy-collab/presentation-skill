@@ -79,6 +79,10 @@ function cardShadow() {
   };
 }
 
+function cardShadowFor(preset) {
+  return preset && preset.shadow_cards === false ? undefined : cardShadow();
+}
+
 function cleanHex(value, fallback) {
   const raw = String(value || fallback || '').replace(/^#/, '').trim();
   return /^[0-9a-fA-F]{6}$/.test(raw) ? raw.toUpperCase() : String(fallback || '0F172A');
@@ -540,6 +544,7 @@ function compositionGrammar(preset, slideData = {}) {
 }
 
 function roleSystem(preset, slideData, role) {
+  if (preset.uppercase_headings) return '';
   const local = slideData.role_systems && typeof slideData.role_systems === 'object'
     ? slideData.role_systems
     : {};
@@ -550,6 +555,7 @@ function roleSystem(preset, slideData, role) {
 }
 
 function roleContract(preset, slideData, role) {
+  if (preset.uppercase_headings) return null;
   return roleLayoutContract(preset, slideData, role);
 }
 
@@ -605,6 +611,7 @@ function grammarFrameContract(preset, slideData = {}) {
 }
 
 function addGrammarFrame(slide, preset, slideData = {}) {
+  if (preset.uppercase_headings) return false;
   const frame = grammarFrameContract(preset, slideData);
   if (!frame.grammar) return false;
   const accent = cleanHex(preset.accent_primary, '1493A4');
@@ -821,6 +828,12 @@ function addPageSystemChrome(slide, preset, slideData) {
       });
       return;
     }
+    if (motif === 'first-page-rule') {
+      addRule(0, 0, SLIDE_W, 0.09, secondary);
+      addRule(0.42, 1.82, SLIDE_W - 0.84, 0.022, secondary);
+      addRule(0.42, 1.82, 1.10, 0.022, accent);
+      return;
+    }
   }
 
   if (system === 'clinical-rail') {
@@ -886,6 +899,9 @@ function addDarkTitleBar(slide, preset, title, subtitle, slideData = {}) {
   // Full-bleed dark bar at the top of every content slide. The bar height is
   // measured from the title/subtitle stack so folded titles reserve real space
   // before the body layout starts.
+  if (preset.uppercase_headings) {
+    title = safeText(title).toUpperCase();
+  }
   addPageSystemChrome(slide, preset, slideData);
   const grammarHeaderInset = compositionGrammar(preset, slideData) === 'policy-public-docket'
     ? 0.30
@@ -1037,24 +1053,30 @@ function addDarkTitleBar(slide, preset, title, subtitle, slideData = {}) {
   }
 
   if (headerMode === 'stack' || headerMode === 'eyebrow') {
-    const titleColor = preset.text || preset.text_primary || '0F172A';
+    const fpHeadings = preset.uppercase_headings === true;
+    const titleColor = fpHeadings
+      ? (preset.accent_primary || preset.text || '0F172A')
+      : (preset.text || preset.text_primary || '0F172A');
     const subtitleColor = preset.text_muted || '64748B';
-    const stripeW = headerMode === 'eyebrow' ? 0.85 : 1.25;
-    slide.addShape('rect', shapeOpts({
-      x: MARGIN_X + grammarHeaderInset,
-      y: metrics.contentTop - 0.10,
-      w: stripeW,
-      h: 0.05,
-      fill: { color: preset.accent_primary },
-      line: { color: preset.accent_primary, width: 0 },
-    }));
+    const titleFont = fpHeadings ? 24 : metrics.titleFont;
+    if (!fpHeadings) {
+      const stripeW = headerMode === 'eyebrow' ? 0.85 : 1.25;
+      slide.addShape('rect', shapeOpts({
+        x: MARGIN_X + grammarHeaderInset,
+        y: metrics.contentTop - 0.10,
+        w: stripeW,
+        h: 0.05,
+        fill: { color: preset.accent_primary },
+        line: { color: preset.accent_primary, width: 0 },
+      }));
+    }
     slide.addText(metrics.titleText, textOpts({
       x: MARGIN_X + grammarHeaderInset,
       y: metrics.titleY,
       w: metrics.textW - grammarHeaderInset,
       h: metrics.titleH,
       fontFace: preset.font_heading,
-      fontSize: metrics.titleFont,
+      fontSize: titleFont,
       bold: true,
       color: titleColor,
     }));
@@ -2047,6 +2069,42 @@ function renderTitleTelemetryBoard(pptx, slide, slideData, preset) {
   attachNotes(slide, slideData);
 }
 
+function renderTitleFpCover(pptx, slide, slideData, preset) {
+  const accent = cleanHex(preset.accent_primary, '427FE0');
+  const secondary = cleanHex(preset.accent_secondary, 'FF5254');
+  const hasHero = Boolean(slideData.background_image);
+  if (hasHero) {
+    addBackgroundImage(slide, slideData.background_image, preset);
+    slide.addShape('rect', shapeOpts({
+      x: 0, y: 0, w: SLIDE_W, h: SLIDE_H,
+      fill: { color: '0B1220', transparency: 32 },
+      line: { color: '0B1220', transparency: 100, width: 0 },
+    }));
+  } else {
+    paintBackground(slide, preset.bg || 'FFFFFF');
+  }
+  const title = safeText(slideData.title, 'TITLE').toUpperCase();
+  const subtitle = safeText(slideData.subtitle);
+  const titleColor = hasHero ? 'FFFFFF' : accent;
+  const subtitleColor = hasHero ? 'FFFFFF' : (preset.text_muted || '595959');
+  slide.addText(title, textOpts({
+    x: MARGIN_X, y: 2.30, w: 8.4, h: 1.1,
+    fontFace: preset.font_heading, fontSize: 34, bold: true, color: titleColor, fit: 'shrink',
+  }));
+  slide.addShape('rect', shapeOpts({
+    x: MARGIN_X, y: 3.52, w: 1.5, h: 0.05,
+    fill: { color: secondary }, line: { color: secondary, width: 0 },
+  }));
+  if (subtitle) {
+    slide.addText(subtitle, textOpts({
+      x: MARGIN_X, y: 3.74, w: 8.4, h: 0.6,
+      fontFace: preset.font_body, fontSize: 14, color: subtitleColor, fit: 'shrink',
+    }));
+  }
+  addTitleFooter(slide, preset, slideData);
+  attachNotes(slide, slideData);
+}
+
 function renderTitle(pptx, slide, slideData, preset) {
   const titleSystem = roleSystem(preset, slideData, 'title');
   const roleLayout = {
@@ -2067,7 +2125,13 @@ function renderTitle(pptx, slide, slideData, preset) {
     'telemetry-cover': 'telemetry-board',
     'title-telemetry-state': 'telemetry-board',
   }[titleSystem];
-  const layout = String(slideData.title_layout || roleLayout || preset.title_layout || 'split-hero')
+  const presetCover = String(preset.title_layout || '').trim().toLowerCase();
+  const layout = String(
+    slideData.title_layout
+      || (presetCover === 'fp-cover' ? presetCover : roleLayout)
+      || preset.title_layout
+      || 'split-hero'
+  )
     .trim()
     .toLowerCase();
   if (layout === 'lab-plate') {
@@ -2084,6 +2148,8 @@ function renderTitle(pptx, slide, slideData, preset) {
     renderTitleLightAtlas(pptx, slide, slideData, preset);
   } else if (layout === 'telemetry-board') {
     renderTitleTelemetryBoard(pptx, slide, slideData, preset);
+  } else if (layout === 'fp-cover') {
+    renderTitleFpCover(pptx, slide, slideData, preset);
   } else {
     renderTitleSplit(pptx, slide, slideData, preset);
   }
@@ -2372,6 +2438,29 @@ function renderSection(pptx, slide, slideData, preset) {
   ]);
   const technicalStage = new Set(['workflow-brackets', 'signal-grid', 'incident-rail']);
   const investorStage = new Set(['proof-stage', 'thesis-window']);
+
+  if (motif === 'first-page-rule') {
+    paintBackground(slide, preset.bg || 'FFFFFF');
+    addPageSystemChrome(slide, preset, slideData);
+    const accent = cleanHex(preset.accent_primary, '427FE0');
+    const secondary = cleanHex(preset.accent_secondary, 'FF5254');
+    slide.addShape('rect', shapeOpts({
+      x: MARGIN_X, y: 2.15, w: 8.4, h: 0.022,
+      fill: { color: secondary }, line: { color: secondary, width: 0 },
+    }));
+    slide.addText(safeText(title).toUpperCase(), textOpts({
+      x: MARGIN_X, y: 2.36, w: 8.4, h: 0.9,
+      fontFace: preset.font_heading, fontSize: 24, bold: true, color: accent, fit: 'shrink',
+    }));
+    if (subtitle) {
+      slide.addText(subtitle, textOpts({
+        x: MARGIN_X, y: 3.36, w: 8.4, h: 0.5,
+        fontFace: preset.font_body, fontSize: 13, color: preset.text_muted || '595959', fit: 'shrink',
+      }));
+    }
+    attachNotes(slide, slideData);
+    return;
+  }
 
   if (lightEditorial.has(motif)) {
     paintBackground(slide, preset.bg || 'FFFFFF');
@@ -2774,7 +2863,7 @@ function renderStandard(pptx, slide, slideData, preset) {
       fill: { color: preset.surface || 'FFFFFF' },
       line: { color: preset.line, width: 0.75 },
       rectRadius: 0.08,
-      shadow: cardShadow(),
+      shadow: cardShadowFor(preset),
     }));
     slide.addText('Key takeaways', textOpts({
       x: cardX + 0.2, y: contentY + 0.15, w: cardW - 0.4, h: 0.3,
@@ -2900,7 +2989,7 @@ function renderCards(pptx, slide, slideData, preset, columns) {
       x: cx, y: cy, w: cw, h: ch,
       fill: { color: preset.surface || 'FFFFFF' },
       line: { color: preset.line, width: 0.75 },
-      shadow: cardShadow(),
+      shadow: cardShadowFor(preset),
     }));
     // Top accent rail.
     slide.addShape('rect', shapeOpts({
@@ -3021,7 +3110,7 @@ function renderSplit(pptx, slide, slideData, preset) {
     x: rightX, y: contentY, w: rightW, h: contentH,
     fill: { color: preset.bg_dark },
     line: { color: preset.bg_dark, width: 0 },
-    shadow: cardShadow(),
+    shadow: cardShadowFor(preset),
   }));
   // Accent stripe on the right panel.
   slide.addShape('rect', shapeOpts({
@@ -3260,7 +3349,7 @@ function renderTimelineStaggered(pptx, slide, slideData, preset) {
       h,
       fill: { color: preset.surface || 'FFFFFF' },
       line: { color: preset.line, width: 0.75 },
-      shadow: cardShadow(),
+      shadow: cardShadowFor(preset),
     }));
     slide.addShape('rect', shapeOpts({
       x,
@@ -3409,7 +3498,7 @@ function renderTimelineChapterSpread(pptx, slide, slideData, preset) {
     h: contentH,
     fill: { color: preset.bg_dark || '0F172A' },
     line: { color: preset.bg_dark || '0F172A', width: 0 },
-    shadow: cardShadow(),
+    shadow: cardShadowFor(preset),
   }));
   slide.addText('01', textOpts({
     x: MARGIN_X + 0.22,
@@ -3622,7 +3711,7 @@ function renderTimeline(pptx, slide, slideData, preset) {
       x: cardX, y: cardY, w: cardW, h: cardH,
       fill: { color: preset.surface || 'FFFFFF' },
       line: { color: preset.line, width: 0.75 },
-      shadow: cardShadow(),
+      shadow: cardShadowFor(preset),
     }));
     // Top accent rail on the card.
     slide.addShape('rect', shapeOpts({
@@ -3870,7 +3959,7 @@ function renderStatsFeatureLeft(slide, slideData, preset, header, facts, iconPat
     h: contentH,
     fill: { color: preset.bg_dark || '0F172A' },
     line: { color: preset.bg_dark || '0F172A', width: 0 },
-    shadow: cardShadow(),
+    shadow: cardShadowFor(preset),
   }));
   slide.addShape('rect', shapeOpts({
     x: MARGIN_X,
@@ -4186,7 +4275,7 @@ function renderStats(pptx, slide, slideData, preset) {
       x: tx, y: tileY, w: tileW, h: tileH,
       fill: { color: preset.bg_dark },
       line: { color: preset.bg_dark, width: 0 },
-      shadow: cardShadow(),
+      shadow: cardShadowFor(preset),
     }));
     // Left accent rail.
     slide.addShape('rect', shapeOpts({
@@ -4210,7 +4299,7 @@ function renderStats(pptx, slide, slideData, preset) {
     }
 
     // Large stat value.
-    const valueFont = String(fact.value || '').length > 5 ? 36 : 40;
+    const valueFont = preset.uppercase_headings ? 36 : (String(fact.value || '').length > 5 ? 36 : 40);
     const valueY = tileY + 0.34;
     const valueH = Math.min(0.86, tileH * 0.28);
     const labelY = valueY + valueH + 0.13;
@@ -4298,12 +4387,13 @@ function renderKpiHero(pptx, slide, slideData, preset) {
   // Title + subtitle on the top of the slide in light text for dark mode.
   const titleColor = dark ? 'FFFFFF' : preset.text_primary;
   const subtitleColor = dark ? 'CBD5E1' : preset.text_muted;
-  const title = String(slideData.title || '').trim();
+  const rawTitle = String(slideData.title || '').trim();
+  const title = preset.uppercase_headings ? rawTitle.toUpperCase() : rawTitle;
   const subtitle = String(slideData.subtitle || '').trim();
   const header = headerMetrics(title, subtitle, {
     topPad: 0.28,
     bottomPad: 0.10,
-    titleFont: titleFontForLength(title) + 2,
+    titleFont: preset.uppercase_headings ? 24 : (titleFontForLength(title) + 2),
     subtitleFont: 14,
   });
   slide.addText(title, textOpts({
@@ -4331,7 +4421,7 @@ function renderKpiHero(pptx, slide, slideData, preset) {
   const value = String(slideData.value || '?').trim();
   const label = String(slideData.label || '').trim();
   const context = String(slideData.context || '').trim();
-  let valueFont = kpiValueFontSize(value);
+  let valueFont = preset.uppercase_headings ? Math.min(54, kpiValueFontSize(value)) : kpiValueFontSize(value);
 
   const valueColor = dark
     ? firstReadableColor(
@@ -4550,7 +4640,7 @@ function buildTableRows(table, preset, opts) {
   };
   const bodyCellStyleA = {
     fill: { color: stripHashColor(options.bodyFill || preset.surface || 'FFFFFF', 'FFFFFF') },
-    color: preset.text_primary || preset.text || '0F172A',
+    color: options.bodyTextColor || preset.text_primary || preset.text || '0F172A',
     fontFace: preset.font_body,
     fontSize: bodyFont,
     align: 'left',
@@ -4603,7 +4693,7 @@ function tableColumnWidths(headers, weights, usableW) {
 
 function normalizeTableTreatment(value, fallback) {
   const raw = String(value || fallback || 'standard').trim().toLowerCase();
-  const allowed = new Set(['standard', 'compact-ledger', 'readout-sidecar', 'decision-matrix', 'journal-grid']);
+  const allowed = new Set(['standard', 'compact-ledger', 'readout-sidecar', 'decision-matrix', 'journal-grid', 'light-ledger', 'dark-ledger']);
   return allowed.has(raw) ? raw : 'standard';
 }
 
@@ -4645,6 +4735,29 @@ function tableTreatmentOptions(treatment, preset, referenceTable) {
       zebraFill: preset.surface_alt || preset.bg || 'F8FAFC',
       lastColumnFill: preset.accent_secondary || preset.accent_primary,
       lastColumnColor: 'FFFFFF',
+    };
+  }
+  if (treatment === 'light-ledger') {
+    return {
+      headerFontSize: 11,
+      bodyFontSize: 10.5,
+      rowH: 0.42,
+      headerFill: preset.accent_primary,
+      headerTextColor: 'FFFFFF',
+      bodyFill: 'FFFFFF',
+      zebraFill: 'F5F7FA',
+    };
+  }
+  if (treatment === 'dark-ledger') {
+    return {
+      headerFontSize: 11,
+      bodyFontSize: 10.5,
+      rowH: 0.42,
+      headerFill: preset.bg_dark || '2E60AC',
+      headerTextColor: 'FFFFFF',
+      bodyFill: preset.bg_dark || '2E60AC',
+      bodyTextColor: 'FFFFFF',
+      zebraFill: preset.bg_dark || '2E60AC',
     };
   }
   if (treatment === 'journal-grid') {

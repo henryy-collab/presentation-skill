@@ -21,7 +21,7 @@ SUPPORTED_HEADER_VARIANTS = [
     "top-bottom-rule",
     "plain",
 ]
-SUPPORTED_TITLE_LAYOUTS = ["split-hero", "lab-plate", "command-center", "poster", "masthead", "light-atlas", "broadsheet"]
+SUPPORTED_TITLE_LAYOUTS = ["split-hero", "lab-plate", "command-center", "poster", "masthead", "light-atlas", "broadsheet", "fp-cover"]
 SUPPORTED_FOOTERS = ["standard", "source-line"]
 SUPPORTED_CHART_TREATMENTS = [
     "standard",
@@ -32,7 +32,7 @@ SUPPORTED_CHART_TREATMENTS = [
     "threshold-band",
     "sparse-wide",
 ]
-SUPPORTED_TABLE_TREATMENTS = ["standard", "compact-ledger", "readout-sidecar", "decision-matrix", "journal-grid"]
+SUPPORTED_TABLE_TREATMENTS = ["standard", "compact-ledger", "readout-sidecar", "decision-matrix", "journal-grid", "light-ledger", "dark-ledger"]
 SUPPORTED_FIGURE_TABLE_TREATMENTS = ["figure-first", "table-first", "stats-strip", "image-sidebar"]
 SUPPORTED_PAGE_SYSTEMS = ["clinical-rail", "board-ledger", "editorial-field", "command-canvas", "lab-plate", "investor-thesis"]
 SUPPORTED_IMAGE_SIDEBAR_MODES = ["analysis-rail", "evidence-mosaic", "editorial-atlas"]
@@ -51,6 +51,7 @@ SUPPORTED_STRUCTURAL_MOTIFS = [
     "incident-rail",
     "signal-grid",
     "assay-register",
+    "first-page-rule",
 ]
 RENDERER_TREATMENT_FIELDS = (
     "page_system",
@@ -87,6 +88,7 @@ PAGE_SYSTEM_BY_PRESET = {
     "forest-research": "lab-plate",
     "bold-startup-narrative": "investor-thesis",
     "sunset-investor": "investor-thesis",
+    "first-page-sales": "editorial-field",
 }
 
 STRUCTURAL_MOTIF_BY_PRESET = {
@@ -103,6 +105,7 @@ STRUCTURAL_MOTIF_BY_PRESET = {
     "charcoal-safety": "incident-rail",
     "midnight-neon": "signal-grid",
     "lab-report": "assay-register",
+    "first-page-sales": "first-page-rule",
 }
 
 IMAGE_SIDEBAR_MODES_BY_PAGE_SYSTEM = {
@@ -137,6 +140,7 @@ IMAGE_SIDEBAR_MODES_BY_PRESET = {
     "charcoal-safety": ["analysis-rail", "evidence-mosaic"],
     "midnight-neon": ["evidence-mosaic", "analysis-rail"],
     "lab-report": ["evidence-mosaic", "analysis-rail"],
+    "first-page-sales": ["analysis-rail", "evidence-mosaic"],
 }
 
 COMPARISON_MODES_BY_PRESET = {
@@ -145,6 +149,8 @@ COMPARISON_MODES_BY_PRESET = {
     } else ["scorecard", "open-columns"])
     for preset in STRUCTURAL_MOTIF_BY_PRESET
 }
+
+COMPARISON_MODES_BY_PRESET["first-page-sales"] = ["open-columns", "scorecard"]
 
 
 BASE_MIX_MATRIX = {
@@ -403,6 +409,24 @@ PROFILE_OVERRIDES: dict[str, dict[str, Any]] = {
         },
         "best_for": ["technical demos", "security/AI narratives", "high-contrast explainers"],
         "avoid": ["neon accents on every object", "small low-contrast footers"],
+    },
+    "first-page-sales": {
+        "family": "agency-pitch",
+        "background_system": "white agency report",
+        "heading_accent_combo": "uppercase Lato headings, blue title color, red separator rules",
+        "style_mix_matrix": {
+            "header_variant_pool": ["plain", "split-rule", "left-accent", "title-rule"],
+            "title_layout_pool": ["fp-cover", "masthead", "broadsheet"],
+            "footer_pool": ["source-line", "standard"],
+            "chart_treatment_pool": ["minimal", "standard", "sparse-wide"],
+            "table_treatment_pool": ["light-ledger", "dark-ledger", "standard"],
+            "figure_table_treatment_pool": ["table-first", "figure-first", "stats-strip"],
+            "stats_mode_pool": ["tiles", "feature-left", "policy-bands"],
+            "matrix_mode_pool": ["open-quadrants", "cards"],
+            "summary_callout_mode_pool": ["default", "lab-box"],
+        },
+        "best_for": ["sales proposals", "agency pitch decks", "SEO audits", "client-facing diagnostics"],
+        "avoid": ["dark stage backgrounds for dense data", "decorative card grids", "oversized KPI hero values"],
     },
 }
 

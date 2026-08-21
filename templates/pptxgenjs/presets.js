@@ -176,6 +176,23 @@ const PRESETS = {
     font_heading: 'Helvetica Neue',
     font_body: 'Helvetica Neue',
   },
+  'first-page-sales': {
+    bg: 'FFFFFF',
+    bg_dark: '2E60AC',
+    surface: 'FFFFFF',
+    text: '000000',
+    text_muted: '595959',
+    accent_primary: '427FE0',
+    accent_secondary: 'FF5254',
+    highlight: 'FFDE0E',
+    line: 'D9D9D9',
+    font_heading: 'Lato',
+    font_body: 'Lato',
+    // First Page house rules: uppercase headings, restrained type scale,
+    // red separator rules instead of card shadows.
+    uppercase_headings: true,
+    shadow_cards: false,
+  },
 };
 
 const DEFAULT_PRESET_NAME = 'executive-clinical';

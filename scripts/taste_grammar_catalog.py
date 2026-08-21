@@ -375,6 +375,8 @@ PRESET_TO_GRAMMAR = {
     for preset in grammar["style_presets"]
 }
 
+PRESET_TO_GRAMMAR["first-page-sales"] = "consulting-answer-pyramid"
+
 
 def _role_system_catalogs() -> dict[str, list[dict[str, str]]]:
     catalogs: dict[str, list[dict[str, str]]] = {}
