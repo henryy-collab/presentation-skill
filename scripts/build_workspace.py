@@ -1226,7 +1226,7 @@ _STYLE_ENUM_VALUES = {
         "clinical-stages", "board-index", "field-notes", "thesis-window",
         "workflow-brackets", "case-margin", "journal-folio", "editorial-rule",
         "open-coordinate", "proof-stage", "incident-rail", "signal-grid",
-        "assay-register", "none",
+        "assay-register", "first-page-rule", "none",
     },
     "header_mode": {"bar", "stack", "eyebrow", "lab-clean", "lab-card"},
     "header_variant": {
@@ -1247,6 +1247,7 @@ _STYLE_ENUM_VALUES = {
         "light-atlas",
         "broadsheet",
         "telemetry-board",
+        "fp-cover",
     },
     "composition_grammar": {
         "consulting-answer-pyramid",
@@ -1265,7 +1266,7 @@ _STYLE_ENUM_VALUES = {
     "stats_mode": {"tiles", "feature-left", "policy-bands"},
     "cards_mode": {"feature-left", "staggered-row"},
     "chart_treatment": {"standard", "facts-below", "facts-right", "minimal", "hero-stat", "threshold-band", "sparse-wide"},
-    "table_treatment": {"standard", "compact-ledger", "readout-sidecar", "decision-matrix", "journal-grid"},
+    "table_treatment": {"standard", "compact-ledger", "readout-sidecar", "decision-matrix", "journal-grid", "light-ledger", "dark-ledger"},
     "footer_mode": {"standard", "source-line", "none"},
     "summary_callout_mode": {"default", "lab-box"},
     "figure_table_treatment": {"figure-first", "table-first", "stats-strip", "image-sidebar"},

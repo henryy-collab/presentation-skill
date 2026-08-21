@@ -35,6 +35,7 @@ SUPPORTED_TITLE_LAYOUTS = {
     "masthead",
     "light-atlas",
     "broadsheet",
+    "fp-cover",
 }
 SUPPORTED_HEADER_MODES = {"bar", "stack", "eyebrow", "lab-clean", "lab-card"}
 SUPPORTED_VISUAL_DENSITIES = {"low", "medium", "high"}
@@ -43,7 +44,7 @@ SUPPORTED_STRUCTURAL_MOTIFS = {
     "clinical-stages", "board-index", "field-notes", "thesis-window",
     "workflow-brackets", "case-margin", "journal-folio", "editorial-rule",
     "open-coordinate", "proof-stage", "incident-rail", "signal-grid",
-    "assay-register", "none",
+    "assay-register", "first-page-rule", "none",
 }
 SUPPORTED_TITLE_MOTIFS = {"orbit", "network", "editorial", "none"}
 SUPPORTED_SECTION_MOTIFS = {"rail-dots", "numbered-tabs", "plain", "none"}
@@ -52,7 +53,7 @@ SUPPORTED_MATRIX_MODES = {"cards", "open-quadrants"}
 SUPPORTED_STATS_MODES = {"tiles", "feature-left", "policy-bands"}
 SUPPORTED_CARDS_MODES = {"feature-left", "staggered-row"}
 SUPPORTED_CHART_TREATMENTS = {"standard", "facts-below", "facts-right", "minimal", "hero-stat", "threshold-band", "sparse-wide"}
-SUPPORTED_TABLE_TREATMENTS = {"standard", "compact-ledger", "readout-sidecar", "decision-matrix", "journal-grid"}
+SUPPORTED_TABLE_TREATMENTS = {"standard", "compact-ledger", "readout-sidecar", "decision-matrix", "journal-grid", "light-ledger", "dark-ledger"}
 SUPPORTED_FOOTERS = {"standard", "source-line", "none"}
 SUPPORTED_SUMMARY_CALLOUT_MODES = {"default", "lab-box"}
 SUPPORTED_FIGURE_TREATMENTS = {

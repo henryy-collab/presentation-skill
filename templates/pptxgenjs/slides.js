@@ -4739,9 +4739,9 @@ function tableTreatmentOptions(treatment, preset, referenceTable) {
   }
   if (treatment === 'light-ledger') {
     return {
-      headerFontSize: 11,
-      bodyFontSize: 10.5,
-      rowH: 0.42,
+      headerFontSize: 11.5,
+      bodyFontSize: 11,
+      rowH: 0.62,
       headerFill: preset.accent_primary,
       headerTextColor: 'FFFFFF',
       bodyFill: 'FFFFFF',
@@ -4750,9 +4750,9 @@ function tableTreatmentOptions(treatment, preset, referenceTable) {
   }
   if (treatment === 'dark-ledger') {
     return {
-      headerFontSize: 11,
-      bodyFontSize: 10.5,
-      rowH: 0.42,
+      headerFontSize: 11.5,
+      bodyFontSize: 11,
+      rowH: 0.62,
       headerFill: preset.bg_dark || '2E60AC',
       headerTextColor: 'FFFFFF',
       bodyFill: preset.bg_dark || '2E60AC',

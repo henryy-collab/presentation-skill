@@ -49,7 +49,7 @@ COMPOSITION_GRAMMARS: dict[str, dict[str, Any]] = {
     "consulting-answer-pyramid": {
         "lane": "answer-led",
         "description": "Lead with the answer, prove it with structured exhibits, and close on ownership.",
-        "style_presets": ["data-heavy-boardroom", "arctic-minimal"],
+        "style_presets": ["data-heavy-boardroom", "arctic-minimal", "first-page-sales"],
         "prompt_keywords": ["board", "consulting", "executive", "recommendation", "strategy", "tradeoff"],
         "role_system_ids": {
             "title": "title-answer-ledger",
